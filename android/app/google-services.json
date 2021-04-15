@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "237624393783",
+    "firebase_url": "https://fir-chatandlogin-default-rtdb.firebaseio.com",
+    "project_id": "fir-chatandlogin",
+    "storage_bucket": "fir-chatandlogin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237624393783:android:f3227763bf57bfbd84bfb2",
+        "android_client_info": {
+          "package_name": "com.firebaseauth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "237624393783-1n34t2jpdsd3759uu8pug2jpjgjhgfh8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaSZwe4gI9xxtAMvbfMwX4sbFeRQ82Mqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "237624393783-1n34t2jpdsd3759uu8pug2jpjgjhgfh8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
