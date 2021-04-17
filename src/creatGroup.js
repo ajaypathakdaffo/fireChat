@@ -74,7 +74,11 @@ const CreateGroup = ({navigation, route}) => {
           onPress={() => onSelect(item?.item?.number)}
           style={styles.itemContainerWrapper}>
           <View style={styles.itemContainer}>
-            <View style={styles.dp} />
+            <View style={styles.dp}>
+              <Text style={styles.dpText}>
+                {item?.item?.name.substring(0, 1).toUpperCase()}
+              </Text>
+            </View>
             <Text>{item?.item?.name ?? ''}</Text>
           </View>
           {selected.includes(item?.item?.number) && (
@@ -99,7 +103,7 @@ const CreateGroup = ({navigation, route}) => {
       />
       <View style={{}}>
         <TextInput
-          style={{borderBottomWidth: 1}}
+          style={styles.textInputStyle}
           placeholder="Group Name"
           value={groupName}
           onChangeText={setGroupName}
@@ -111,7 +115,7 @@ const CreateGroup = ({navigation, route}) => {
         renderItem={renderItem}
       />
       <TouchableOpacity style={styles.createGroup} onPress={onPressCreate}>
-        <Text>{'Create'}</Text>
+        <Text style={styles.button}>{'Create Group'}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -142,7 +146,13 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     backgroundColor: '#ccc',
-    marginRight: 20,
+    marginHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dpText: {
+    color: '#FF7F50',
+    fontSize: 30,
   },
   checkBox: {
     width: 20,
@@ -153,8 +163,18 @@ const styles = StyleSheet.create({
   createGroup: {
     padding: 10,
     marginHorizontal: 20,
-    backgroundColor: 'green',
+    backgroundColor: '#81c5cf',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  button: {
+    color: 'white',
+  },
+  textInputStyle: {
+    marginHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
 });

@@ -16,6 +16,7 @@ function LoginScreen({navigation}) {
   const [number, setNumber] = useState('');
   const [userName, setUserName] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const databaseRef = useRef(database().ref('/users'));
 
   useEffect(() => {
@@ -24,13 +25,15 @@ function LoginScreen({navigation}) {
 
   const signInWithPhoneNumber = () => {
     setError(null);
-    if (number == '') {
-      setError('Number can not be empty');
+    if (number == '' || number.length < 10) {
+      setError('You have entered invalid number');
     } else {
+      setLoading(true);
       auth()
         .signInWithPhoneNumber('+91' + number)
         .then(confirmation => {
           setConfirm(confirmation);
+          setLoading(false);
         })
         .catch(err => {
           setError(err.message);
@@ -40,6 +43,7 @@ function LoginScreen({navigation}) {
   };
 
   const confirmCode = async () => {
+    setLoading(true);
     confirm
       .confirm(code)
       .then(res => {
@@ -50,14 +54,21 @@ function LoginScreen({navigation}) {
             if (res.additionalUserInfo.isNewUser) {
               signUp();
             } else {
+              setCode('');
+              setUserName('');
+              setNumber('');
+              setLoading(false);
               navigation.navigate('Connections');
             }
           })
           .catch(err => {
+            setLoading(false);
+            setError(err.message);
             console.log('error', err);
           });
       })
       .catch(err => {
+        setLoading(false);
         setError(err.message);
         console.log('error', err);
       });
@@ -84,6 +95,9 @@ function LoginScreen({navigation}) {
       })
       .then(() => {
         setConfirm(null);
+        setCode('');
+        setUserName('');
+        setNumber('');
         navigation.navigate('Connections');
         console.log('Data set.');
       });
@@ -100,10 +114,20 @@ function LoginScreen({navigation}) {
       console.log(e);
     }
   };
+  if (loading) {
+    return (
+      <View style={styles.Loading}>
+        <Text>{'Loading...'}</Text>
+      </View>
+    );
+  }
 
   if (!confirm) {
     return (
       <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>{'Ginger Chat'}</Text>
+        </View>
         <View style={styles.formContainer}>
           <TextInput
             style={styles.textInput}
@@ -158,21 +182,38 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  Loading: {
+    flex: 1,
+    backgroundColor: '#fffffa',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   button: {
-    alignSelf: 'center',
-    backgroundColor: '#61b33b',
-    width: 160,
-    height: 40,
-    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 20,
+    backgroundColor: '#81c5cf',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 20,
+    marginVertical: 20,
   },
   formContainer: {
-    borderWidth: 1,
+    borderBottomWidth: 1,
     marginVertical: 10,
     justifyContent: 'center',
     marginHorizontal: 20,
-    borderRadius: 10,
+
+    borderBottomColor: '#ccc',
+  },
+  logoContainer: {
+    marginVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  logoText: {
+    color: '#000080',
+    fontSize: 50,
   },
   textInput: {
     borderRadius: 10,

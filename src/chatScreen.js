@@ -15,7 +15,8 @@ import _ from 'lodash';
 import Header from './header';
 
 function ChatScreen({navigation, route}) {
-  const {isgroup} = route?.params;
+  const {isgroup, item} = route?.params;
+  console.log('KKKKKK', item);
   const chatRoom = '/chat/' + route?.params?.chatRoom;
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -24,7 +25,8 @@ function ChatScreen({navigation, route}) {
   const databaseRef = useRef(database().ref(chatRoom));
   useEffect(() => {
     scrollRef.current?.scrollToEnd({animated: true});
-  }, []);
+  }, [newMessage]);
+
   useEffect(() => {
     setUserName(route?.params?.user?.phoneNumber ?? 'alian');
   }, []);
@@ -49,6 +51,9 @@ function ChatScreen({navigation, route}) {
     setNewMessage(text);
   }, []);
   const onPressSend = useCallback(() => {
+    if (newMessage == '') {
+      return;
+    }
     databaseRef.current
       .push({
         text: newMessage,
@@ -76,18 +81,14 @@ function ChatScreen({navigation, route}) {
 
   return (
     <>
-      <Header navigation={navigation} title={'Chat Screen'} />
+      <Header
+        isRightIocn={true}
+        navigation={navigation}
+        title={item?.item?.name ?? ''}
+        rightText={'Log out'}
+        onRightPress={handleSignout}
+      />
       <View style={styles.wraper}>
-        <TouchableOpacity
-          onPress={handleSignout}
-          style={{
-            backgroundColor: 'cyan',
-            padding: 10,
-            margin: 10,
-            alignSelf: 'flex-end',
-          }}>
-          <Text>{'Sign Out'}</Text>
-        </TouchableOpacity>
         <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
           {message?.map(messageItem => {
             return (
@@ -96,9 +97,11 @@ function ChatScreen({navigation, route}) {
                   style={{
                     alignSelf: 'center',
                     padding: 10,
-                    backgroundColor: '#bbeebb',
+                    backgroundColor: '#222422',
+                    borderRadius: 10,
+                    elevation: 5,
                   }}>
-                  <Text>
+                  <Text style={{color: '#fff'}}>
                     {moment(messageItem[0].time).format('DD MM YYYY')}
                   </Text>
                 </View>
@@ -112,7 +115,8 @@ function ChatScreen({navigation, route}) {
                           alignSelf:
                             item.source == username ? 'flex-end' : 'flex-start',
                           backgroundColor:
-                            item.source == username ? '#0000ffaa' : '#FF000099',
+                            item.source == username ? '#04668c' : '#f5024f',
+                          elevation: 25,
                         },
                       ]}>
                       {isgroup && (
@@ -174,8 +178,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     borderColor: '#ccc',
-    borderWidth: 5,
-    borderRadius: 8,
+    borderBottomWidth: 1,
   },
   textInputStyle: {
     width: '85%',

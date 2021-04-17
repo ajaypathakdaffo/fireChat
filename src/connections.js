@@ -66,6 +66,7 @@ const Connections = ({navigation, route}) => {
       user: value,
       chatRoom: chatRoom,
       isgroup: item?.item?.members?.length > 0,
+      item: item,
     });
   };
 
@@ -81,7 +82,11 @@ const Connections = ({navigation, route}) => {
         <TouchableOpacity
           onPress={() => handleClick(item)}
           style={styles.itemContainer}>
-          <View style={styles.dp} />
+          <View style={styles.dp}>
+            <Text style={styles.dpText}>
+              {item?.item?.name.substring(0, 1).toUpperCase()}
+            </Text>
+          </View>
           <Text>{item?.item?.name ?? ''}</Text>
         </TouchableOpacity>
       );
@@ -101,6 +106,7 @@ const Connections = ({navigation, route}) => {
         title={'Connections'}
         onRightPress={handleRightPress}
         isLeftIocn={false}
+        rightText={'Create Group+'}
       />
       {console.log('userData', userData)}
       <FlatList
@@ -130,5 +136,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#ccc',
     marginHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dpText: {
+    color: '#FF7F50',
+    fontSize: 30,
   },
 });
