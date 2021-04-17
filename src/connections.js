@@ -98,11 +98,11 @@ const Connections = ({navigation, route}) => {
       <Header
         navigation={navigation}
         isRightIocn={true}
-        title={'Chat Screen'}
+        title={'Connections'}
         onRightPress={handleRightPress}
         isLeftIocn={false}
       />
-
+      {console.log('userData', userData)}
       <FlatList
         data={groupData?.length > 0 ? [...userData, ...groupData] : userData}
         keyExtractor={item => item.id}

@@ -43,7 +43,6 @@ const CreateGroup = ({navigation, route}) => {
   const getUser = async () => {
     const value = JSON.parse(await AsyncStorage.getItem('user'));
     setUserNumber(value.phoneNumber);
-    console.log('JJJJJJ', value.phoneNumber);
     setSelected([...selected, value.phoneNumber]);
   };
 

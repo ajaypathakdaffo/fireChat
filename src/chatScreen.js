@@ -91,7 +91,7 @@ function ChatScreen({navigation, route}) {
         <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
           {message?.map(messageItem => {
             return (
-              <>
+              <View key={messageItem[0].time}>
                 <View
                   style={{
                     alignSelf: 'center',
@@ -105,7 +105,7 @@ function ChatScreen({navigation, route}) {
                 {_.orderBy(messageItem, ['time'], ['asc'])?.map(item => {
                   return (
                     <View
-                      key={item.text}
+                      key={item.time}
                       style={[
                         styles.messageView,
                         {
@@ -125,7 +125,7 @@ function ChatScreen({navigation, route}) {
                     </View>
                   );
                 })}
-              </>
+              </View>
             );
           })}
         </ScrollView>
