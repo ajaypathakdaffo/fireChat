@@ -11,9 +11,12 @@ import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import _ from 'lodash';
+import Header from './header';
 
-function ChatScreen(props) {
-  const chatRoom = '/chat/' + props.route?.params?.chatRoom;
+function ChatScreen({navigation, route}) {
+  const {isgroup} = route?.params;
+  const chatRoom = '/chat/' + route?.params?.chatRoom;
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const scrollRef = useRef();
@@ -21,17 +24,25 @@ function ChatScreen(props) {
   const databaseRef = useRef(database().ref(chatRoom));
   useEffect(() => {
     scrollRef.current?.scrollToEnd({animated: true});
-    setUserName(props.route?.params?.user?.phoneNumber ?? 'alian');
   }, []);
   useEffect(() => {
-    const onValueChange = databaseRef.current
-      .orderByValue()
-      .on('value', snapshot => {
-        let snap = snapshot._snapshot.value
-          ? Object.values(snapshot._snapshot.value)
-          : null;
-        setMessage(snap?.reverse());
-      });
+    setUserName(route?.params?.user?.phoneNumber ?? 'alian');
+  }, []);
+
+  useEffect(() => {
+    const onValueChange = databaseRef.current.on('value', snapshot => {
+      let snap = snapshot._snapshot.value
+        ? Object.values(snapshot._snapshot.value)
+        : null;
+
+      setMessage(
+        _.reverse(
+          Object.values(
+            _.groupBy(snap, item => moment(item.time).format('DD MM YYYY')),
+          ),
+        ),
+      );
+    });
     return () => database().ref().off('value', onValueChange);
   }, []);
   const onChangeText = useCallback(text => {
@@ -56,7 +67,7 @@ function ChatScreen(props) {
         auth()
           .signOut()
           .then(() => console.log('User signed out!'));
-        props.navigation.navigate('LoginScreen');
+        navigation.navigate('LoginScreen');
       })
       .catch(err => {
         console.log('error', err);
@@ -64,54 +75,74 @@ function ChatScreen(props) {
   };
 
   return (
-    <View style={styles.wraper}>
-      <TouchableOpacity
-        onPress={handleSignout}
-        style={{
-          backgroundColor: 'cyan',
-          padding: 10,
-          margin: 10,
-          alignSelf: 'flex-end',
-        }}>
-        <Text>{'Sign Out'}</Text>
-      </TouchableOpacity>
-      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
-        {message?.map(item => {
-          return (
-            <View
-              key={item.text}
-              style={[
-                styles.messageView,
-                {
-                  alignSelf:
-                    item.source == username ? 'flex-end' : 'flex-start',
-                  backgroundColor:
-                    item.source == username ? '#0000ffaa' : '#FF000099',
-                },
-              ]}>
-              <Text style={styles.messageText}>{item.text}</Text>
-              {/* <Text style={styles.source}>{item.source}</Text> */}
-              <Text style={styles.time}>
-                {moment(item.time).format('h:mm')}
-              </Text>
-            </View>
-          );
-        })}
-      </ScrollView>
-
-      <View style={styles.textInputView}>
-        <TextInput
-          style={styles.textInputStyle}
-          onChangeText={text => onChangeText(text)}
-          value={newMessage}
-          onSubmitEditing={onPressSend}
-          placeholder="Message"
-        />
-        <TouchableOpacity onPress={onPressSend} style={styles.sendButton}>
-          <Text style={styles.sendButtonText}>{'send >'}</Text>
+    <>
+      <Header navigation={navigation} title={'Chat Screen'} />
+      <View style={styles.wraper}>
+        <TouchableOpacity
+          onPress={handleSignout}
+          style={{
+            backgroundColor: 'cyan',
+            padding: 10,
+            margin: 10,
+            alignSelf: 'flex-end',
+          }}>
+          <Text>{'Sign Out'}</Text>
         </TouchableOpacity>
+        <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
+          {message?.map(messageItem => {
+            return (
+              <>
+                <View
+                  style={{
+                    alignSelf: 'center',
+                    padding: 10,
+                    backgroundColor: '#bbeebb',
+                  }}>
+                  <Text>
+                    {moment(messageItem[0].time).format('DD MM YYYY')}
+                  </Text>
+                </View>
+                {_.orderBy(messageItem, ['time'], ['asc'])?.map(item => {
+                  return (
+                    <View
+                      key={item.text}
+                      style={[
+                        styles.messageView,
+                        {
+                          alignSelf:
+                            item.source == username ? 'flex-end' : 'flex-start',
+                          backgroundColor:
+                            item.source == username ? '#0000ffaa' : '#FF000099',
+                        },
+                      ]}>
+                      {isgroup && (
+                        <Text style={styles.sourceStyle}>{item.source}</Text>
+                      )}
+                      <Text style={styles.messageText}>{item.text}</Text>
+                      <Text style={styles.time}>
+                        {moment(item.time).format('h:mm A')}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </>
+            );
+          })}
+        </ScrollView>
+        <View style={styles.textInputView}>
+          <TextInput
+            style={styles.textInputStyle}
+            onChangeText={text => onChangeText(text)}
+            value={newMessage}
+            onSubmitEditing={onPressSend}
+            placeholder="Message"
+          />
+          <TouchableOpacity onPress={onPressSend} style={styles.sendButton}>
+            <Text style={styles.sendButtonText}>{'send >'}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 const styles = StyleSheet.create({
@@ -133,6 +164,10 @@ const styles = StyleSheet.create({
   },
   time: {
     color: 'white',
+    alignSelf: 'flex-end',
+  },
+  sourceStyle: {
+    color: '#ccc',
     alignSelf: 'flex-end',
   },
   textInputView: {
@@ -157,5 +192,14 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   sendButtonText: {fontSize: 18},
+  day: {
+    color: 'red',
+    alignSelf: 'center',
+  },
+  dayContainer: {
+    padding: 10,
+    backgroundColor: '#aaffaa',
+    alignSelf: 'center',
+  },
 });
 export default ChatScreen;

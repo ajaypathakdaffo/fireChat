@@ -17,7 +17,7 @@ function LoginScreen({navigation}) {
   const [userName, setUserName] = useState('');
   const [error, setError] = useState(null);
   const databaseRef = useRef(database().ref('/users'));
-  console.log(a);
+
   useEffect(() => {
     checkAuth();
   }, []);
