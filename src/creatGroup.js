@@ -30,16 +30,7 @@ const CreateGroup = ({navigation, route}) => {
     });
     return () => database().ref().off('value', onValueChange);
   }, []);
-  const getChatRoom = (user1, user2) => {
-    let number1 = parseInt(user1.substring(3));
-    let number2 = parseInt(user2.substring(3));
 
-    if (number1 > number2) {
-      return `${number1}${number2}`;
-    } else {
-      return `${number2}${number1}`;
-    }
-  };
   const getUser = async () => {
     const value = JSON.parse(await AsyncStorage.getItem('user'));
     setUserNumber(value.phoneNumber);
@@ -47,7 +38,14 @@ const CreateGroup = ({navigation, route}) => {
   };
 
   const onSelect = number => {
-    setSelected([...selected, number]);
+    if (selected.includes(number)) {
+      let newSelection = selected.filter(item => {
+        return item !== number;
+      });
+      setSelected(newSelection);
+    } else {
+      setSelected([...selected, number]);
+    }
   };
 
   const onPressCreate = useCallback(() => {
