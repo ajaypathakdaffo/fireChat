@@ -16,7 +16,6 @@ import Header from './header';
 
 function ChatScreen({navigation, route}) {
   const {isgroup, item} = route?.params;
-  console.log('KKKKKK', item);
   const chatRoom = '/chat/' + route?.params?.chatRoom;
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -61,7 +60,7 @@ function ChatScreen({navigation, route}) {
         time: new Date().getTime(),
       })
       .then(() => {
-        console.log('Data set.');
+        console.log('message send ');
       });
     setNewMessage('');
   }, [newMessage, username]);
@@ -74,9 +73,7 @@ function ChatScreen({navigation, route}) {
           .then(() => console.log('User signed out!'));
         navigation.navigate('LoginScreen');
       })
-      .catch(err => {
-        console.log('error', err);
-      });
+      .catch(err => {});
   };
 
   return (

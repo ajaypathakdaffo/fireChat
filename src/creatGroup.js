@@ -57,7 +57,6 @@ const CreateGroup = ({navigation, route}) => {
           members: selected,
         })
         .then(() => {
-          console.log('Data set.');
           navigation.navigate('Connections');
         });
       setGroupName('');
@@ -90,7 +89,6 @@ const CreateGroup = ({navigation, route}) => {
   };
 
   const handleRightPress = () => {
-    console.log('right press');
     navigation.navigate('CreateGroup');
   };
 

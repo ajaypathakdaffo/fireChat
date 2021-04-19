@@ -16,7 +16,7 @@ function LoginScreen({navigation}) {
   const [number, setNumber] = useState('');
   const [userName, setUserName] = useState('');
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const databaseRef = useRef(database().ref('/users'));
 
   useEffect(() => {
@@ -37,7 +37,6 @@ function LoginScreen({navigation}) {
         })
         .catch(err => {
           setError(err.message);
-          console.log('error', err.message);
         });
     }
   };
@@ -47,7 +46,6 @@ function LoginScreen({navigation}) {
     confirm
       .confirm(code)
       .then(res => {
-        console.log('user', res.additionalUserInfo.isNewUser);
         let user = JSON.stringify(res.user);
         AsyncStorage.setItem('user', user)
           .then(() => {
@@ -58,19 +56,18 @@ function LoginScreen({navigation}) {
               setUserName('');
               setNumber('');
               setLoading(false);
+              setConfirm(null);
               navigation.navigate('Connections');
             }
           })
           .catch(err => {
             setLoading(false);
             setError(err.message);
-            console.log('error', err);
           });
       })
       .catch(err => {
         setLoading(false);
         setError(err.message);
-        console.log('error', err);
       });
   };
   const handleChange = text => {
@@ -99,9 +96,7 @@ function LoginScreen({navigation}) {
         setUserName('');
         setNumber('');
         navigation.navigate('Connections');
-        console.log('Data set.');
       });
-    setNewMessage('');
   }, [number]);
 
   const checkAuth = async () => {
@@ -109,69 +104,73 @@ function LoginScreen({navigation}) {
       const value = JSON.parse(await AsyncStorage.getItem('user'));
       if (value !== null) {
         navigation.navigate('Connections');
+        setLoading(false);
+      } else {
+        setLoading(false);
       }
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   };
+
   if (loading) {
     return (
       <View style={styles.Loading}>
         <Text>{'Loading...'}</Text>
       </View>
     );
-  }
+  } else {
+    if (!confirm) {
+      return (
+        <View style={styles.container}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoText}>{'Ginger Chat'}</Text>
+          </View>
+          <View style={styles.formContainer}>
+            <TextInput
+              style={styles.textInput}
+              value={userName}
+              onChangeText={text => setUserName(text)}
+              placeholder="User Name"
+            />
+          </View>
+          <View style={styles.formContainer}>
+            <TextInput
+              style={styles.textInput}
+              value={number}
+              onChangeText={text => handleChange(text)}
+              placeholder="Phone number"
+            />
+            {error && (
+              <Text style={{color: 'red', alignSelf: 'flex-end'}}>{error}</Text>
+            )}
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={signInWithPhoneNumber}>
+            <Text>{'Sign in'}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
 
-  if (!confirm) {
     return (
       <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>{'Ginger Chat'}</Text>
-        </View>
         <View style={styles.formContainer}>
           <TextInput
             style={styles.textInput}
-            value={userName}
-            onChangeText={text => setUserName(text)}
-            placeholder="User Name"
-          />
-        </View>
-        <View style={styles.formContainer}>
-          <TextInput
-            style={styles.textInput}
-            value={number}
-            onChangeText={text => handleChange(text)}
-            placeholder="Phone number"
+            value={code}
+            onChangeText={text => handleCode(text)}
+            placeholder="Verification Code"
           />
           {error && (
             <Text style={{color: 'red', alignSelf: 'flex-end'}}>{error}</Text>
           )}
         </View>
-        <TouchableOpacity style={styles.button} onPress={signInWithPhoneNumber}>
-          <Text>{'Sign in'}</Text>
+        <TouchableOpacity style={styles.button} onPress={() => confirmCode()}>
+          <Text>{'Confirm Code'}</Text>
         </TouchableOpacity>
       </View>
     );
   }
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.textInput}
-          value={code}
-          onChangeText={text => handleCode(text)}
-          placeholder="Verification Code"
-        />
-        {error && (
-          <Text style={{color: 'red', alignSelf: 'flex-end'}}>{error}</Text>
-        )}
-      </View>
-      <TouchableOpacity style={styles.button} onPress={() => confirmCode()}>
-        <Text>{'Confirm Code'}</Text>
-      </TouchableOpacity>
-    </View>
-  );
 }
 
 export default LoginScreen;

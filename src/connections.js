@@ -94,7 +94,6 @@ const Connections = ({navigation, route}) => {
   };
 
   const handleRightPress = () => {
-    console.log('right press');
     navigation.navigate('CreateGroup');
   };
 
@@ -108,7 +107,6 @@ const Connections = ({navigation, route}) => {
         isLeftIocn={false}
         rightText={'Create Group+'}
       />
-      {console.log('userData', userData)}
       <FlatList
         data={groupData?.length > 0 ? [...userData, ...groupData] : userData}
         keyExtractor={item => item.id}
